@@ -1,0 +1,15 @@
+{
+  "luci-app-argon-fan": {
+    "description": "Grant UCI access for luci-app-argon-fan",
+    "read": {
+      "cgi-io": ["exec"],
+      "file": {
+        "/sbin/logread -e argon_fan": ["exec"]
+      },
+      "uci": ["argon_fan"]
+    },
+    "write": {
+      "uci": ["argon_fan"]
+    }
+  }
+}

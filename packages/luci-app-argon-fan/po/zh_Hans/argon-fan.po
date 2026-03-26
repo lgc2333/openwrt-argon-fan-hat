@@ -1,0 +1,81 @@
+"Language: zh_Hans\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid ""
+msgstr ""
+
+msgid "Argon Fan HAT"
+msgstr "Argon Fan HAT"
+
+msgid "Argon Fan HAT Settings"
+msgstr "Argon Fan HAT 控制设置"
+
+msgid "Here you can configure the temperature thresholds, fan speeds, and view logs for your Argon Fan HAT."
+msgstr "你可以通过此页面在路由系统上直观配置 Argon Fan HAT 的温控系统以及查看日志。"
+
+msgid "Temperature & Fan Speed Settings"
+msgstr "温控转速详细参数配置"
+
+msgid "General Settings"
+msgstr "常规设置"
+
+msgid "Log"
+msgstr "运行日志"
+
+msgid "No log available."
+msgstr "暂无可用的运行日志。"
+
+msgid "Polling Interval (s)"
+msgstr "温度检测轮询间隔 (单位:秒)"
+
+msgid "How often to check the temperature (in seconds)."
+msgstr "检测一次主板核心温度以调整风扇的等待周期"
+
+msgid "High Temperature (°C)"
+msgstr "高温阈值线 (°C)"
+
+msgid "Threshold for high fan speed."
+msgstr "超过即触发最高风扇转速模式"
+
+msgid "High Speed (%)"
+msgstr "最高级别转速 (%)"
+
+msgid "Speed when high temperature is reached (0-100)."
+msgstr "定义高温时风力拉满程度（0-100）"
+
+msgid "Medium Temperature (°C)"
+msgstr "中等温度线 (°C)"
+
+msgid "Threshold for medium fan speed."
+msgstr "介于中高之间触发风扇常规模式运转"
+
+msgid "Medium Speed (%)"
+msgstr "中等级别转速 (%)"
+
+msgid "Speed when medium temperature is reached (0-100)."
+msgstr "建议定义一个相对噪音较小但是效果不差的风扇降温值（0-100）"
+
+msgid "Low Temperature (°C)"
+msgstr "低温起转温度 (°C)"
+
+msgid "Threshold for low fan speed."
+msgstr "只有在达到该温度后才会将静默状态改为风扇运转"
+
+msgid "Low Speed (%)"
+msgstr "低负载转速 (%)"
+
+msgid "Speed when low temperature is reached (0-100)."
+msgstr "建议给点微风让其慢慢扇热（0-100）"
+
+msgid "Idle Speed (%)"
+msgstr "空载冷却转速 (%)"
+
+msgid "Speed when below low temperature threshold (0-100)."
+msgstr "低于设定的所有温度，如不打算停转仍期望带走余温亦可设置"
+
+msgid "Cooldown Delay (s)"
+msgstr "延迟降速时间 (秒)"
+
+msgid "Time to wait before allowing fan speed to drop. Set to 0 disables this function. Since the program only checks temperature at the fixed polling interval, it is recommended to set this as a multiple of the polling interval."
+msgstr "风扇允许降速之前等待的时间。设为 0 禁用此功能。由于程序只会固定地以轮询间隔查询系统温度，所以建议将该项设置为轮询间隔的倍数。"

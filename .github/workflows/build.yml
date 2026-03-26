@@ -1,0 +1,66 @@
+name: Build OpenWrt Packages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/**'
+      - 'scripts/**'
+      - '.github/workflows/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'packages/**'
+      - 'scripts/**'
+      - '.github/workflows/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: Cache OpenWrt SDK
+        id: cache-sdk
+        uses: actions/cache@v5
+        with:
+          path: build
+          key: ${{ runner.os }}-openwrt-sdk-24.10.0-x86-64
+
+      - name: Install Build Dependencies
+        run: ./scripts/1-debian-install-deps.sh
+
+      - name: Download and Unpack SDK (if not cached)
+        if: steps.cache-sdk.outputs.cache-hit != 'true'
+        run: ./scripts/2-download-sdk.sh
+
+      - name: Prepare Build
+        run: ./scripts/3-prepare-build.sh
+
+      - name: Build Packages
+        run: ./scripts/4-build.sh
+
+      - name: Pack logs
+        if: ${{ always() }}
+        run: |
+          if [ -d build/logs ]; then
+            tar -czf logs.tar.gz -C build/logs .
+          fi
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages
+          path: dist/*.ipk
+
+      - name: Upload Build Logs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: logs.tar.gz

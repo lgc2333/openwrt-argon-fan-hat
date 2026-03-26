@@ -1,0 +1,12 @@
+{
+  "name": "@root/openwrt-argon-fan-hat",
+  "version": "0",
+  "packageManager": "pnpm@10.23.0",
+  "scripts": {},
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "@lazulikao/luci-types": "github:LazuliKao/luci-types",
+    "typescript": "^6.0.2"
+  }
+}

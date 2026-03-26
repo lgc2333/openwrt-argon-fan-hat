@@ -1,0 +1,146 @@
+#!/bin/sh
+
+##region consts
+ADDR_FAN=0x1a # Default I2C Address for Argon Fan HAT
+WAKEUP_TIME=1 # Time in seconds to spin up fan from idle
+TEMP_FILE="/sys/class/thermal/thermal_zone0/temp"
+##endregion consts
+
+##region config
+# Helper to safely get UCI config with a fallback
+get_uci() {
+	local val
+	val=$(uci get "argon_fan.@argon_fan[0].$1" 2>/dev/null)
+	echo "${val:-$2}"
+}
+
+# Load thresholds and speeds
+INTERVAL=$(get_uci "poll_interval" 30)
+if [ "$INTERVAL" -lt 1 ]; then
+	INTERVAL=1
+fi
+COOLDOWN_DELAY=$(get_uci "cooldown_delay" 30)
+if [ "$COOLDOWN_DELAY" -lt 0 ]; then
+	COOLDOWN_DELAY=0
+fi
+T_HIGH=$(get_uci "temp_high" 65)
+S_HIGH=$(get_uci "speed_high" 100)
+T_MED=$(get_uci "temp_medium" 60)
+S_MED=$(get_uci "speed_medium" 55)
+T_LOW=$(get_uci "temp_low" 55)
+S_LOW=$(get_uci "speed_low" 10)
+S_IDLE=$(get_uci "speed_idle" 0)
+##endregion config
+
+##region globals
+PREV_SPEED=-1
+COOLED_TIME=0
+
+# Detect new firmware requiring 0x80 register
+USE_REG=0
+if i2cget -y 1 $ADDR_FAN 0x80 >/dev/null 2>&1; then
+	USE_REG=1
+fi
+##endregion globals
+
+log_msg() {
+	local msg="$1"
+	logger -t argon_fan "$msg"
+}
+
+send_fan_speed() {
+	local speed=$1
+	if [ "$USE_REG" -eq 1 ]; then
+		i2cset -y 1 $ADDR_FAN 0x80 "$speed" >/dev/null 2>&1
+	else
+		i2cset -y 1 $ADDR_FAN "$speed" >/dev/null 2>&1
+	fi
+	return $?
+}
+
+set_fan_speed() {
+	local target_speed=$1
+	local current_temp=$2
+
+	if [ "$target_speed" -eq "$PREV_SPEED" ]; then
+		return 0
+	fi
+
+	local i2c_ret=0
+
+	# Spin up logic for older units
+	if [ "$target_speed" -gt 0 ] && [ "$PREV_SPEED" -eq 0 ]; then
+		log_msg "Change Fan Speed to 100% for ${WAKEUP_TIME}s to wake it up"
+		send_fan_speed 100
+		sleep $WAKEUP_TIME
+	fi
+
+	# Set final target speed
+	log_msg "Change Fan Speed to ${target_speed}% (Temp: ${current_temp}C, Previous: ${PREV_SPEED}%)"
+	send_fan_speed "$target_speed"
+	i2c_ret=$?
+	if [ $i2c_ret -eq 0 ]; then
+		PREV_SPEED=$target_speed
+	else
+		log_msg "Error: failed to set fan speed to $target_speed via I2C."
+	fi
+
+	return $i2c_ret
+}
+
+# Main loop
+main_loop() {
+	log_msg "Argon Fan Daemon started. Polling every ${INTERVAL}s."
+	log_msg "Thresholds & Speeds: IDLE=${S_IDLE}%, LOW=${T_LOW}C/${S_LOW}%, MED=${T_MED}C/${S_MED}%, HIGH=${T_HIGH}C/${S_HIGH}%"
+
+	while true; do
+		local current_interval="$INTERVAL"
+
+		if [ ! -f "$TEMP_FILE" ]; then
+			log_msg "Error: Cannot read CPU temperature because file not found. Retrying in ${current_interval}s."
+			sleep "$current_interval"
+			continue
+		fi
+
+		# Read temperature (in millidegrees Celsius) and convert to Celsius integer
+		local TEMP_RAW=$(cat "$TEMP_FILE")
+		local TEMP_C=$((TEMP_RAW / 1000))
+
+		local target_speed="$S_IDLE"
+		if [ "$TEMP_C" -ge "$T_HIGH" ]; then
+			target_speed="$S_HIGH"
+		elif [ "$TEMP_C" -ge "$T_MED" ]; then
+			target_speed="$S_MED"
+		elif [ "$TEMP_C" -ge "$T_LOW" ]; then
+			target_speed="$S_LOW"
+		fi
+
+		# Implement a non-blocking cooldown before dropping speed to prevent fluctuation
+		if [ "$COOLDOWN_DELAY" -eq 0 ] || [ "$target_speed" -ge "$PREV_SPEED" ] || [ "$PREV_SPEED" -eq -1 ]; then
+			# Allow to speed up if user disabled, temperature rises or if it's the first run
+			COOLED_TIME=0
+		elif [ "$COOLED_TIME" -ge "$COOLDOWN_DELAY" ]; then
+			log_msg "Cooldown finished. Proceeding with speed drop."
+			COOLED_TIME=0
+		else
+			if [ "$COOLED_TIME" -eq 0 ]; then
+				log_msg "Cooling down... Delaying drop in speed. (Current ${TEMP_C}C)"
+			fi
+			# Keep speed and increase passed time counter
+			target_speed="$PREV_SPEED"
+			COOLED_TIME=$((COOLED_TIME + current_interval))
+		fi
+
+		set_fan_speed "$target_speed" "$TEMP_C"
+
+		# If i2cset failed (device likely not connected), double the sleep interval
+		if [ $? -ne 0 ]; then
+			current_interval=$((INTERVAL * 2))
+			log_msg "Device might not be correctly connected. Doubling polling interval to ${current_interval}s."
+		fi
+
+		sleep "$current_interval"
+	done
+}
+
+main_loop

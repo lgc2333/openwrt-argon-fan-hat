@@ -1,0 +1,13 @@
+{
+  "admin/services/argon-fan": {
+    "title": "Argon Fan HAT",
+    "action": {
+      "type": "view",
+      "path": "argon_fan/config"
+    },
+    "depends": {
+      "acl": ["luci-app-argon-fan"],
+      "uci": { "argon_fan": true }
+    }
+  }
+}
