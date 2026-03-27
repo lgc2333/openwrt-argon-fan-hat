@@ -1,8 +1,8 @@
-'use strict'
-'require view'
-'require form'
-'require fs'
-'require poll'
+'use strict'; // prettier-ignore
+'require view'; // prettier-ignore
+'require form'; // prettier-ignore
+'require fs'; // prettier-ignore
+'require poll'; // prettier-ignore
 
 // @ts-ignore
 return view.extend({
