@@ -2,17 +2,22 @@
 
 Language: English | [简体中文](README.zh-CN.md)
 
-> Note: a large portion of this project was generated with AI assistance. The code has been reviewed, tuned, and tested on real hardware, but if that is a concern, please do not use this project.
+**Note: a large portion of this project was generated with AI assistance. The code has been reviewed, tuned, and tested on real hardware, but if that is a concern, please do not use this project.**
 
 This project provides an OpenWrt adaptation of the Argon Fan HAT control logic. The original script has been rewritten as native OpenWrt packages with unnecessary parts removed, giving you a long-running fan daemon and a LuCI configuration page for Raspberry Pi devices running OpenWrt.
 
 ## Showcase
 
+<details open>
+<summary>Click to collapse / expand</summary>
+
 Note: the screenshots below were taken with project version v0.1.1-r1, `luci-theme-argon` v2.4.3, and ImmortalWrt 24.10.3, with custom default settings applied.
 Please treat them as reference only and rely on the actual UI after installation.
 
-![showcase1](readme/showcase1-en.png)
+![showcase1](readme/showcase1-en.png)  
 ![showcase2](readme/showcase2-en.png)
+
+</details>
 
 ## Usage
 

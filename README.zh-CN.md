@@ -1,16 +1,23 @@
 # OpenWrt Argon Fan HAT
 
+语言: [English](README.md) | 简体中文
+
 **注意：本项目大量代码使用 AI 生成，虽然代码质量由我把控且有实机测试，但如果担心则不建议使用本项目**
 
 这是一个面向 OpenWrt 的 Argon Fan HAT 适配项目。它把原版脚本中 Argon Fan HAT 的控制逻辑重新实现为 OpenWrt 包，对非必要内容进行精简，提供常驻风扇守护进程和 LuCI 配置界面，适合在树莓派上的 OpenWrt 环境中使用。
 
 ## 展示
 
+<details open>
+<summary>点击收起/展开</summary>
+
 注：以下截图使用项目 v0.1.1-r1 版本、`luci-theme-argon` v2.4.3 与 ImmortalWrt 24.10.3，且我更改过默认设置  
 请以实际安装后展示的界面为准
 
 ![showcase1](readme/showcase1-zh.png)  
 ![showcase2](readme/showcase2-zh.png)
+
+</details>
 
 ## 使用
 
