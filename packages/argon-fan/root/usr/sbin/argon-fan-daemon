@@ -19,6 +19,10 @@ INTERVAL=$(get_uci "poll_interval" 30)
 if [ "$INTERVAL" -lt 1 ]; then
 	INTERVAL=1
 fi
+FAIL_INTERVAL=$(get_uci "poll_fail_interval" 30)
+if [ "$FAIL_INTERVAL" -lt 1 ]; then
+	FAIL_INTERVAL=1
+fi
 COOLDOWN_DELAY=$(get_uci "cooldown_delay" 30)
 if [ "$COOLDOWN_DELAY" -lt 0 ]; then
 	COOLDOWN_DELAY=0
@@ -70,19 +74,20 @@ set_fan_speed() {
 
 	# Spin up logic for older units
 	if [ "$target_speed" -gt 0 ] && [ "$PREV_SPEED" -le 0 ]; then
-		log_msg "Change Fan Speed to 100% for ${WAKEUP_TIME}s to wake it up"
+		log_msg "Set fan speed to 100% for ${WAKEUP_TIME}s to wake it up"
 		send_fan_speed 100
 		sleep $WAKEUP_TIME
 	fi
 
 	# Set final target speed
-	log_msg "Change Fan Speed to ${target_speed}% (Temp: ${current_temp}C, Previous: ${PREV_SPEED}%)"
+	log_msg "Change fan speed from ${PREV_SPEED}% to ${target_speed}%. Current temp ${current_temp}C."
 	send_fan_speed "$target_speed"
 	i2c_ret=$?
 	if [ $i2c_ret -eq 0 ]; then
 		PREV_SPEED=$target_speed
 	else
-		log_msg "Error: failed to set fan speed to $target_speed via I2C."
+		PREV_SPEED=-1
+		log_msg "ERROR: Failed to set fan speed to $target_speed via I2C with return code $i2c_ret."
 	fi
 
 	return $i2c_ret
@@ -124,7 +129,7 @@ main_loop() {
 			COOLED_TIME=0
 		else
 			if [ "$COOLED_TIME" -eq 0 ]; then
-				log_msg "Cooling down... Delaying drop in speed. (Current ${TEMP_C}C)"
+				log_msg "Cooling down... Delaying drop in speed. Current temp ${TEMP_C}C."
 			fi
 			# Keep speed and increase passed time counter
 			target_speed="$PREV_SPEED"
@@ -133,10 +138,10 @@ main_loop() {
 
 		set_fan_speed "$target_speed" "$TEMP_C"
 
-		# If i2cset failed (device likely not connected), double the sleep interval
+		# i2cset failed (device likely not connected)
 		if [ $? -ne 0 ]; then
-			current_interval=$((INTERVAL * 2))
-			log_msg "Device might not be correctly connected. Doubling polling interval to ${current_interval}s."
+			current_interval="$FAIL_INTERVAL"
+			log_msg "Changing polling interval to ${FAIL_INTERVAL}s."
 		fi
 
 		sleep "$current_interval"

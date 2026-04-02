@@ -1,5 +1,6 @@
 config argon_fan
 option poll_interval '30'
+option poll_fail_interval '30'
 option cooldown_delay '30'
 option temp_high '65'
 option speed_high '100'

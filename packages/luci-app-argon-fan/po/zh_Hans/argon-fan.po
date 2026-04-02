@@ -12,7 +12,7 @@ msgid "Argon Fan HAT Settings"
 msgstr "Argon Fan HAT 控制设置"
 
 msgid "Here you can configure the temperature thresholds, fan speeds, and view logs for your Argon Fan HAT."
-msgstr "你可以通过此页面在路由系统上直观配置 Argon Fan HAT 的温控系统以及查看日志。"
+msgstr "你可以通过此页面配置 Argon Fan HAT 的温控设置以及查看日志。"
 
 msgid "Temperature & Fan Speed Settings"
 msgstr "温控转速详细参数配置"
@@ -27,10 +27,16 @@ msgid "No log available."
 msgstr "暂无可用的运行日志。"
 
 msgid "Polling Interval (s)"
-msgstr "温度检测轮询间隔 (单位:秒)"
+msgstr "温度检测轮询间隔 (单位：秒)"
 
 msgid "How often to check the temperature (in seconds)."
 msgstr "检测一次主板核心温度以调整风扇的等待周期"
+
+msgid "Failed Polling Interval (s)"
+msgstr "温度检测失败后的轮询间隔 (单位：秒)"
+
+msgid "When a temperature polling attempt fails, how long to wait before trying again (in seconds)."
+msgstr "当温度检测失败时，等待多长时间后再次尝试检测 (单位：秒)"
 
 msgid "High Temperature (°C)"
 msgstr "高温阈值线 (°C)"
@@ -42,7 +48,7 @@ msgid "High Speed (%)"
 msgstr "最高级别转速 (%)"
 
 msgid "Speed when high temperature is reached (0-100)."
-msgstr "定义高温时风力拉满程度（0-100）"
+msgstr "定义高温时风力拉满程度 (0-100)"
 
 msgid "Medium Temperature (°C)"
 msgstr "中等温度线 (°C)"
@@ -54,7 +60,7 @@ msgid "Medium Speed (%)"
 msgstr "中等级别转速 (%)"
 
 msgid "Speed when medium temperature is reached (0-100)."
-msgstr "建议定义一个相对噪音较小但是效果不差的风扇降温值（0-100）"
+msgstr "建议定义一个相对噪音较小但是效果不差的风扇降温值 (0-100)"
 
 msgid "Low Temperature (°C)"
 msgstr "低温起转温度 (°C)"

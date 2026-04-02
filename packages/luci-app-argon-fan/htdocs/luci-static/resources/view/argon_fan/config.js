@@ -46,13 +46,22 @@ return view.extend({
     o = s.taboption(
       'general',
       form.Value,
+      'poll_fail_interval',
+      _('Failed Polling Interval (s)'),
+      _(
+        'When a temperature polling attempt fails, how long to wait before trying again (in seconds).',
+      ),
+    )
+    o.datatype = 'min(1)'
+    o.default = '30'
+
+    o = s.taboption(
+      'general',
+      form.Value,
       'cooldown_delay',
       _('Cooldown Delay (s)'),
       _(
-        'Time to wait before allowing fan speed to drop.' +
-          ' Set to 0 disables this function.' +
-          ' Since the program only checks temperature at the fixed polling interval' +
-          ', it is recommended to set this as a multiple of the polling interval.',
+        'Time to wait before allowing fan speed to drop. Set to 0 disables this function. Since the program only checks temperature at the fixed polling interval, it is recommended to set this as a multiple of the polling interval.',
       ),
     )
     o.datatype = 'min(0)'
