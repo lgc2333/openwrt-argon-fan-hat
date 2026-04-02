@@ -4,7 +4,7 @@ cd build || exit 1
 
 for pkg in $BUILD_PACKAGES; do
 	echo "==> Building $pkg"
-	if [ "$0" -eq "clean" ]; then
+	if [ "$1" -eq "clean" ]; then
 		make package/$pkg/clean -j$(nproc) BUILD_LOG=1
 	fi
 	make package/$pkg/compile -j$(nproc) BUILD_LOG=1
